@@ -100,7 +100,7 @@ var packjs = {
         }
 
         for (var i = 0, max = data.includes.length; i < max; i++) {
-            modulePath = path.resolve(path.join(dirname, data.includes[i]));
+            modulePath = path.resolve(path.join(dirname, data.includes[i].path));
             this.watchFile(modulePath);
         }
 
@@ -174,10 +174,11 @@ var packjs = {
      *	パッキングを開始する
      */
     pack: function() {
+        var packed;
         try {
             this.includedFilePath = [];
-            fs.writeFileSync(this.TARGET_PATH, '');
-            this.parseFile(this.SOURCE_PATH);
+            packed = this.parseFile(this.SOURCE_PATH);
+            fs.writeFileSync(this.TARGET_PATH, packed);
 
             console.log(this.LogColor.GREEN + 'pack' + this.LogColor.NORMAL);
             console.log('finish packing successfully.');
@@ -192,7 +193,7 @@ var packjs = {
      *	@param {string} filepath ファイルのパス
      */
     parseFile: function(sourcePath) {
-        var data, modulePath, dirname;
+        var data, modulePath, dirname, packed, cursor;
 
         if (this.isDuplicate(sourcePath)) {
             return;
@@ -200,14 +201,20 @@ var packjs = {
         this.includedFilePath.push(sourcePath);
 
         dirname = path.dirname(sourcePath);
-        data = this.loadFile(sourcePath)
+        data = this.loadFile(sourcePath);
+        packed = '';
+        cursor = 0;
 
         for (var i = 0, max = data.includes.length; i < max; i++) {
-            modulePath = path.resolve(path.join(dirname, data.includes[i]));
-            this.parseFile(modulePath);
+            modulePath = path.resolve(path.join(dirname, data.includes[i].path));
+            packed +=
+                data.body.substring(cursor, data.includes[i].from) +
+                '\n' + this.parseFile(modulePath) + '\n';
+            cursor = data.includes[i].from + data.includes[i].length;
         }
+        packed += data.body.substring(cursor, data.body.length);
 
-        fs.appendFileSync(this.TARGET_PATH, '\n' + data.body);
+        return packed
     },
 
     /**
@@ -237,7 +244,7 @@ var packjs = {
      */
     loadFile: function(filepath) {
         var includes = [],
-            regIncludes = /@include\s+([^\s]+)\s*/g,
+            regIncludes = /\s*\/\/@include\s+([^\s]+)\s*/g,
             ma, body;
 
         filepath = path.resolve(filepath);
@@ -245,7 +252,11 @@ var packjs = {
         body = fs.readFileSync(filepath, 'utf8');
 
         while (ma = regIncludes.exec(body)) {
-            includes.push(ma[1]);
+            includes.push({
+                from: ma.index,
+                length: ma[0].length,
+                path: ma[1]
+            });
         }
 
         return {
