@@ -4,10 +4,10 @@ packing javascript file to one file.
 
 ##Install
 
-Use bower
+Use npm
 
 ```bash
-bower install --save packjs
+sudo npm install -g pack-js
 ```
 
 ##Usage
@@ -23,7 +23,7 @@ console.log('bar');
 2. Run command.
 
 ```bash
-$ packjs sourcefile.js targetfile.js
+$ packjs sourcefile.js destination.js
 ```
 
 3. Output like this.
@@ -37,5 +37,5 @@ console.log('bar');
 4. If you run with ```-w``` option, then command run as **watching mode** and everytime you update file, do packing automaticaly.
 
 ```bash
-$ packjs sourcefile.js targetfile.js -w
+$ packjs sourcefile.js destination.js -w
 ```
