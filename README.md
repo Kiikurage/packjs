@@ -2,7 +2,21 @@
 
 packing javascript file to one file.
 
-##usage
+##Install
+
+Use npm
+
+```bash
+npm install -g packjs
+```
+
+or, use bower
+
+```bash
+bower install --save packjs
+```
+
+##Usage
 
 1. Write include file path (relative) in each heads of javascript files.
 
@@ -15,7 +29,7 @@ console.log('bar');
 2. Run command.
 
 ```bash
-$ node packjs.js sourcefile.js targetfile.js
+$ packjs sourcefile.js targetfile.js
 ```
 
 3. Output like this.
@@ -29,5 +43,5 @@ console.log('bar');
 4. If you run with ```-w``` option, then command run as **watching mode** and everytime you update file, do packing automaticaly.
 
 ```bash
-$ node packjs.js sourcefile.js targetfile.js -w
+$ packjs sourcefile.js targetfile.js -w
 ```

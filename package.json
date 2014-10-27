@@ -1,0 +1,25 @@
+{
+  "name": "pack-js",
+  "version": "0.0.1",
+  "description": "packing javascript file to one file.",
+  "main": "packjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kikura-yuichiro/packjs.git"
+  },
+  "keywords": [
+    "pack",
+    "concat",
+    "js",
+    "javascript"
+  ],
+  "author": "Yuichiro Kikura (y.kikura@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kikura-yuichiro/packjs/issues"
+  },
+  "homepage": "https://github.com/kikura-yuichiro/packjs"
+}
