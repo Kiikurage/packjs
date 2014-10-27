@@ -4,13 +4,7 @@ packing javascript file to one file.
 
 ##Install
 
-Use npm
-
-```bash
-npm install -g packjs
-```
-
-or, use bower
+Use bower
 
 ```bash
 bower install --save packjs

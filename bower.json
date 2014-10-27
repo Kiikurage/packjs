@@ -1,24 +1,24 @@
 {
-  "name": "packjs",
-  "version": "0.0.1",
-  "homepage": "https://github.com/kikura-yuichiro/packjs",
-  "authors": [
-    "Kikura Yuichiro <y.kikura@gmail.com>"
-  ],
-  "description": "packing javascript file to one file.",
-  "main": "packjs.js",
-  "keywords": [
-    "pack",
-    "js",
-    "concat",
-    "javascript"
-  ],
-  "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ]
+    "name": "packjs",
+    "version": "0.0.1",
+    "homepage": "https://github.com/kikura-yuichiro/packjs",
+    "authors": [
+        "Kikura Yuichiro <y.kikura@gmail.com>"
+    ],
+    "description": "packing javascript file to one file.",
+    "main": "packjs",
+    "keywords": [
+        "pack",
+        "js",
+        "concat",
+        "javascript"
+    ],
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ]
 }
