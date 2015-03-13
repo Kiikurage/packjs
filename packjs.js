@@ -25,14 +25,14 @@ var packjs = {
     },
 
     /**
-     *	読込元ファイル名
-     *	@type {string}
+     *  読込元ファイル名
+     *  @type {string}
      */
     SOURCE_PATH: '',
 
     /**
-     *	出力先ファイル名
-     *	@type {string}
+     *  出力先ファイル名
+     *  @type {string}
      */
     TARGET_PATH: '',
 
@@ -43,8 +43,8 @@ var packjs = {
     flagWatch: false,
 
     /**
-     *	読み込んだコンポーネント一覧
-     *	@type {object<string, boolean>}
+     *  読み込んだコンポーネント一覧
+     *  @type {object<string, boolean>}
      */
     includedFilePath: null,
 
@@ -53,8 +53,15 @@ var packjs = {
      */
     semaphore: false,
 
+    guid: (function() {
+        var guid = 0;
+        return function() {
+            return ++guid;
+        }
+    }()),
+
     /**
-     *	初期化を行う
+     *  初期化を行う
      */
     setup: function() {
         var argv = Array.prototype.slice.call(process.argv, 0),
@@ -173,13 +180,13 @@ var packjs = {
     },
 
     /**
-     *	パッキングを開始する
+     *  パッキングを開始する
      */
     pack: function() {
         var packed;
         try {
-            this.includedFilePath = [];
-            packed = this.parseFile(this.SOURCE_PATH);
+            this.includedFilePath = {};
+            packed = this.parseFile(this.SOURCE_PATH, true);
             fs.writeFileSync(this.TARGET_PATH, packed);
 
             console.log(this.LogColor.GREEN + 'pack' + this.LogColor.NORMAL);
@@ -191,16 +198,17 @@ var packjs = {
     },
 
     /**
-     *	ファイルをパースし、必要なコンポーネントをすべて追加する
-     *	@param {string} filepath ファイルのパス
+     *  ファイルをパースし、必要なコンポーネントをすべて追加する
+     *  @param {string} filepath ファイルのパス
      */
-    parseFile: function(sourcePath) {
+    parseFile: function(sourcePath, isFirst) {
         var data, modulePath, dirname, packed, cursor;
 
+
         if (this.isDuplicate(sourcePath)) {
-            return;
+            return '__packjsModule__.' + this.includedFilePath[modulePath];
         }
-        this.includedFilePath.push(sourcePath);
+        this.includedFilePath[sourcePath] = 'module' + packjs.guid();
 
         dirname = path.dirname(sourcePath);
         data = this.loadFile(sourcePath);
@@ -209,24 +217,31 @@ var packjs = {
 
         for (var i = 0, max = data.includes.length; i < max; i++) {
             modulePath = path.resolve(path.join(dirname, data.includes[i].path));
-            packed +=
-                data.body.substring(cursor, data.includes[i].from) +
-                '\n' + this.parseFile(modulePath) + '\n';
+
+            packed += data.body.substring(cursor, data.includes[i].from);
+            packed += this.parseFile(modulePath);
+
             cursor = data.includes[i].from + data.includes[i].length;
         }
         packed += data.body.substring(cursor, data.body.length);
 
-        return packed
+        return '(function(m){' +
+            (isFirst ? 'var __packjsModule__={};\n' : '') +
+            '(function(module, exports) {' +
+            packed +
+            '}(m, m.exports={}));' +
+            'return __packjsModule__.' + this.includedFilePath[sourcePath] + '=m.exports;' +
+            '}({}))';
     },
 
     /**
-     *	読み込み済みかどうかを確認する
-     *	@param {string} filepath 検査するファイルのパス
-     *	@return {boolean} すでに読み込み済みの場合trueを返す
+     *  読み込み済みかどうかを確認する
+     *  @param {string} filepath 検査するファイルのパス
+     *  @return {boolean} すでに読み込み済みの場合trueを返す
      */
     isDuplicate: function(filepath) {
         filepath = path.resolve(filepath);
-        return !(this.includedFilePath.indexOf(filepath) === -1);
+        return !!this.includedFilePath[filepath];
     },
 
     /**
@@ -240,13 +255,13 @@ var packjs = {
     },
 
     /**
-     *	ファイルを読み込む
-     *	@param {string} filepath ファイルのパス
-     *	@return {string} ファイル本文
+     *  ファイルを読み込む
+     *  @param {string} filepath ファイルのパス
+     *  @return {string} ファイル本文
      */
     loadFile: function(filepath) {
         var includes = [],
-            regIncludes = /\s*\/\/@include\s+([^\s]+)\s*/g,
+            regIncludes = /\s*require\s*\(\'([^\s]+)\'\)\s*/g,
             ma, body;
 
         filepath = path.resolve(filepath);
@@ -260,7 +275,6 @@ var packjs = {
                 path: ma[1]
             });
         }
-
         return {
             path: filepath,
             body: body,
@@ -272,8 +286,7 @@ var packjs = {
 }
 
 packjs.setup();
+packjs.pack();
 if (packjs.flagWatch) {
     packjs.watch();
-} else {
-    packjs.pack();
 }

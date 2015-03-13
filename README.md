@@ -15,9 +15,8 @@ sudo npm install -g pack-js
 1. Write include file path (relative) in each heads of javascript files.
 
 ```javascript
-console.log('foo');
-// @include ./module.js
-console.log('bar');
+//sourcefile.js
+var module = require('./module.js');
 ```
 
 2. Run command.
@@ -26,12 +25,20 @@ console.log('bar');
 $ packjs sourcefile.js destination.js
 ```
 
-3. Output like this.
+3. Output like this. Module context is guarded by function closure.
 
 ```javascript
-console.log('foo');
-function someModule(){};
-console.log('bar');
+//destination.js
+var module = (function(m){
+    (function(module, exports){
+
+        /**
+         *  module body is here.
+         */
+
+    }(m, m.exports={}));
+    return module.exports;
+}({}));
 ```
 
 4. If you run with ```-w``` option, then command run as **watching mode** and everytime you update file, do packing automaticaly.
