@@ -1,6 +1,6 @@
 {
     "name": "pack-js",
-    "version": "1.0.5",
+    "version": "0.0.4",
     "description": "packing javascript file to one file.",
     "main": "packjs",
     "scripts": {
@@ -24,8 +24,5 @@
     "bugs": {
         "url": "https://github.com/kikura-yuichiro/packjs/issues"
     },
-    "homepage": "https://github.com/kikura-yuichiro/packjs",
-    "dependencies": {
-        "exfs": "^0.1.2"
-    }
+    "homepage": "https://github.com/kikura-yuichiro/packjs"
 }
