@@ -246,7 +246,7 @@ var packjs = {
      */
     loadFile: function(filepath) {
         var includes = [],
-            regIncludes = /\s*\/\/@include\s+([^\s]+)\s*/g,
+            regIncludes = /\s*\/\/(\s@include|@include)\s+([^\s]+)\s*/g,
             ma, body;
 
         filepath = path.resolve(filepath);
@@ -257,7 +257,7 @@ var packjs = {
             includes.push({
                 from: ma.index,
                 length: ma[0].length,
-                path: ma[1]
+                path: ma[2]
             });
         }
 
